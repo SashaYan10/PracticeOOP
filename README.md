@@ -19,23 +19,20 @@ public class BinaryRepresentation {
         double fracPart = num - intPart;
 
         System.out.println("Ціла частина: " + Integer.toBinaryString(intPart));
-        System.out.println("Дробова частина: " + getBinaryRepresentation(fracPart));
 
-        scanner.close();
-    }
-
-    public static String getBinaryRepresentation(double fraction) {
         StringBuilder binary = new StringBuilder();
-        while (fraction>0) {
-            fraction *= 2;
-            if (fraction >=1) {
+        while (fracPart > 0) {
+            fracPart *= 2;
+            if (fracPart >= 1) {
                 binary.append(1);
-                fraction -= 1;
+                fracPart -= 1;
             } else {
                 binary.append(0);
             }
         }
-        return binary.toString();
+        System.out.println("Дробова частина: " + binary);
+
+        scanner.close();
     }
 }
 ````
