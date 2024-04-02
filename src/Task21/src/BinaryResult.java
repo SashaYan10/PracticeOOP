@@ -3,7 +3,7 @@ import java.io.Serializable;
 /**
  * Клас для представлення результатів обчислення у двійковій формі та серіалізації/десеріалізації.
  */
-public class BinaryResult implements Serializable {
+public class BinaryResult implements Serializable, ResultDisplay {
     private static final long serialVersionUID = 1L;
 
     private double num;
@@ -42,5 +42,12 @@ public class BinaryResult implements Serializable {
 
     public void setBinaryFracPart(String binaryFracPart) {
         this.binaryFracPart = binaryFracPart;
+    }
+
+    @Override
+    public void displayResult() {
+        System.out.println("Десяткове число: " + num);
+        System.out.println("Ціла частина: " + binaryIntPart);
+        System.out.println("Дробова частина: " + binaryFracPart);
     }
 }

@@ -243,3 +243,196 @@ public class BinaryTest {
 ![](/misc/Task%202.1.png)
 ![](/misc/Task%202.2.png)
 ![](/misc/Task%202.3.png)
+
+# Завдання 3
+
+### Забезпечити розміщення результатів обчислень у колекції з можливістю збереження/відновлення.
+````java
+import java.util.ArrayList;
+import java.util.List;
+
+public class Collection {
+    private List<BinaryResult> results;
+
+    public Collection() {
+        results = new ArrayList<>();
+    }
+
+    public void addResult(BinaryResult result) {
+        results.add(result);
+    }
+
+    public List<BinaryResult> getResults() {
+        return results;
+    }
+}
+````
+
+### Використовуючи шаблон проектування Factory Method (Virtual Constructor), розробити ієрархію, що передбачає розширення рахунок додавання нових відображуваних класів.
+````java
+public interface ResultFactory {
+    BinaryResult createResult(double num, String binaryIntPart, String binaryFracPart);
+}
+````
+
+````java
+public class Factory implements ResultFactory {
+    @Override
+    public BinaryResult createResult(double num, String binaryIntPart, String binaryFracPart) {
+        return new BinaryResult(num, binaryIntPart, binaryFracPart);
+    }
+}
+````
+
+### Розширити ієрархію інтерфейсом "фабрикованих" об'єктів, що представляє набір методів для відображення результатів обчислень.
+````java
+public interface ResultDisplay {
+    void displayResult();
+}
+````
+
+````java
+import java.io.Serializable;
+
+/**
+ * Клас для представлення результатів обчислення у двійковій формі та серіалізації/десеріалізації.
+ */
+public class BinaryResult implements Serializable, ResultDisplay {
+    private static final long serialVersionUID = 1L;
+
+    private double num;
+    private String binaryIntPart;
+    private String binaryFracPart;
+
+    /**
+     * Ініціалізація результатів обчислення у двійковій формі.
+     */
+    public BinaryResult(double num, String binaryIntPart, String binaryFracPart) {
+        this.num = num;
+        this.binaryIntPart = binaryIntPart;
+        this.binaryFracPart = binaryFracPart;
+    }
+
+    //Гетери й сетери для відповідних значень
+    public double getNum() {
+        return num;
+    }
+
+    public void setNum(double num) {
+        this.num = num;
+    }
+
+    public String getBinaryIntPart() {
+        return binaryIntPart;
+    }
+
+    public void setBinaryIntPart(String binaryIntPart) {
+        this.binaryIntPart = binaryIntPart;
+    }
+
+    public String getBinaryFracPart() {
+        return binaryFracPart;
+    }
+
+    public void setBinaryFracPart(String binaryFracPart) {
+        this.binaryFracPart = binaryFracPart;
+    }
+
+    @Override
+    public void displayResult() {
+        System.out.println("Десяткове число: " + num);
+        System.out.println("Ціла частина: " + binaryIntPart);
+        System.out.println("Дробова частина: " + binaryFracPart);
+    }
+}
+````
+
+### Розробити та реалізувати інтерфейс для "фабрикуючого" методу.
+````java
+public interface CalculatorFactory {
+    BinaryResult calculate(double num);
+}
+````
+
+````java
+/**
+ * Клас для обчислення та представлення результатів у двійковій формі.
+ */
+public class BinaryCalculator implements CalculatorFactory {
+    private BinaryResult binaryResult;
+
+    public void solve(double num, int intPart, double fracPart, String binaryIntPart) {
+        StringBuilder binaryFrac = new StringBuilder();
+        while (fracPart != 0) {
+            fracPart *= 2;
+            if (fracPart >= 1) {
+                binaryFrac.append(1);
+                fracPart -= 1;
+            } else {
+                binaryFrac.append(0);
+            }
+        }
+        String binaryFracPart = binaryFrac.toString();
+
+        binaryResult = new BinaryResult(num, binaryIntPart, binaryFracPart);
+    }
+
+    public BinaryResult getBinaryResult() {
+        return binaryResult;
+    }
+
+    @Override
+    public BinaryResult calculate(double num) {
+        return binaryResult;
+    }
+}
+````
+
+````java
+import java.util.Scanner;
+
+/**
+ * Клас для представлення десяткового числа у двійковій формі
+ */
+public class BinaryRepresentation implements CalculatorFactory {
+    private BinaryResult binaryResult;
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.print("Введіть десяткове число: ");
+        double num = scanner.nextDouble();
+
+        int intPart = (int) num;
+        double fracPart = num - intPart;
+
+        String binaryIntPart = Integer.toBinaryString(intPart);
+        StringBuilder binaryFrac = new StringBuilder();
+
+        /**
+         * Метод для отримання двійкового представлення дробової частини числа.
+         */
+        while (fracPart != 0) {
+            fracPart *= 2;
+            if (fracPart >= 1) {
+                binaryFrac.append(1);
+                fracPart -= 1;
+            } else {
+                binaryFrac.append(0);
+            }
+        }
+
+        String binaryFracPart = binaryFrac.toString();
+
+        System.out.println("Ціла частина: " + binaryIntPart);
+        System.out.println("Дробова частина: " + binaryFracPart);
+        scanner.close();
+    }
+    @Override
+    public BinaryResult calculate(double num) {
+        return binaryResult;
+    }
+}
+````
+
+Результат:
+![](/misc/Task3.png)

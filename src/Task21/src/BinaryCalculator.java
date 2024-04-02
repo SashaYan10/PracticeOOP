@@ -1,7 +1,7 @@
 /**
  * Клас для обчислення та представлення результатів у двійковій формі.
  */
-public class BinaryCalculator {
+public class BinaryCalculator implements CalculatorFactory {
     private BinaryResult binaryResult;
 
     public void solve(double num, int intPart, double fracPart, String binaryIntPart) {
@@ -21,6 +21,11 @@ public class BinaryCalculator {
     }
 
     public BinaryResult getBinaryResult() {
+        return binaryResult;
+    }
+
+    @Override
+    public BinaryResult calculate(double num) {
         return binaryResult;
     }
 }

@@ -3,7 +3,8 @@ import java.util.Scanner;
 /**
  * Клас для представлення десяткового числа у двійковій формі
  */
-public class BinaryRepresentation {
+public class BinaryRepresentation implements CalculatorFactory {
+    private BinaryResult binaryResult;
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
 
@@ -34,5 +35,9 @@ public class BinaryRepresentation {
         System.out.println("Ціла частина: " + binaryIntPart);
         System.out.println("Дробова частина: " + binaryFracPart);
         scanner.close();
+    }
+    @Override
+    public BinaryResult calculate(double num) {
+        return binaryResult;
     }
 }
