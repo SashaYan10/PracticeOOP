@@ -1,10 +1,13 @@
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Клас для представлення результатів обчислення у двійковій формі та серіалізації/десеріалізації.
  */
 public class BinaryResult implements Serializable, ResultDisplay {
     private static final long serialVersionUID = 1L;
+    private List<BinaryResult> results;
 
     private double num;
     private String binaryIntPart;
@@ -49,5 +52,17 @@ public class BinaryResult implements Serializable, ResultDisplay {
         System.out.println("Десяткове число: " + num);
         System.out.println("Ціла частина: " + binaryIntPart);
         System.out.println("Дробова частина: " + binaryFracPart);
+    }
+
+    public BinaryResult() {
+        results = new ArrayList<>();
+    }
+
+    public void addResult(BinaryResult result) {
+        results.add(result);
+    }
+
+    public List<BinaryResult> getResults() {
+        return results;
     }
 }
