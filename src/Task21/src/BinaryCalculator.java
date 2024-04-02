@@ -4,35 +4,23 @@
 public class BinaryCalculator {
     private BinaryResult binaryResult;
 
-    public BinaryCalculator(double num) {
-        int intPart = (int) num;
-        double fracPart = num - intPart;
-
-        String binaryInt = Integer.toBinaryString(intPart);
-        String binaryFrac = getFracBinaryRepres(fracPart);
-        
-        this.binaryResult = new BinaryResult(num, intPart, binaryInt, fracPart, binaryFrac);
-    }
-
-    private String getFracBinaryRepres(double fraction) {
-        StringBuilder binary = new StringBuilder();
-        while (fraction > 0) {
-            fraction *= 2;
-            if (fraction >= 1) {
-                binary.append(1);
-                fraction -= 1;
+    public void solve(double num, int intPart, double fracPart, String binaryIntPart) {
+        StringBuilder binaryFrac = new StringBuilder();
+        while (fracPart != 0) {
+            fracPart *= 2;
+            if (fracPart >= 1) {
+                binaryFrac.append(1);
+                fracPart -= 1;
             } else {
-                binary.append(0);
+                binaryFrac.append(0);
             }
         }
-        return binary.toString();
+        String binaryFracPart = binaryFrac.toString();
+
+        binaryResult = new BinaryResult(num, binaryIntPart, binaryFracPart);
     }
 
     public BinaryResult getBinaryResult() {
         return binaryResult;
-    }
-
-    public void setBinaryResult(BinaryResult binaryResult) {
-        this.binaryResult = binaryResult;
     }
 }

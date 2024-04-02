@@ -1,50 +1,50 @@
-import java.io.IOException;
+import java.io.*;
+import java.util.Scanner;
 
 /**
  * Клас для тестування правильності обчислення та серіалізації/десеріалізації результатів в двійковій формі.
  */
 public class BinaryTest {
     public static void main(String[] args) {
-        testBinary();
+        BinaryResult expectedResult = calculateBinaryRepresentation();
+        testSerialization(expectedResult);
+    }
+
+    private static BinaryResult calculateBinaryRepresentation() {
+        Scanner scanner = new Scanner(System.in);
+        System.out.print("Введіть десяткове число: ");
+        double num = scanner.nextDouble();
+        scanner.close();
+
+        BinaryCalculator binaryCalculator = new BinaryCalculator();
+        binaryCalculator.solve(num, (int) num, num - (int) num, Integer.toBinaryString((int) num));
+        return binaryCalculator.getBinaryResult();
     }
 
     /**
      * Метод для тестування правильності обчислень.
+     * @param expectedResult
      */
-    public static void testBinary() {
-        BinaryRepresentation representation = new BinaryRepresentation();
-        int intPart = representation.getIntPart();
-        double fracPart = representation.getFracPart();
-        double userNum = intPart + fracPart;
-        BinaryCalculator calculator = new BinaryCalculator(userNum);
-        BinaryResult origResult = calculator.getBinaryResult();
+    private static void testSerialization(BinaryResult expectedResult) {
+        try (ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream("testBinaryResult.ser"))) {
+            outputStream.writeObject(expectedResult);
+            System.out.println("Об'єкт збережено у файл testBinaryResult.ser");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
-        try {
-            origResult.serialize("test_result.ser");
+        try (ObjectInputStream inputStream = new ObjectInputStream(new FileInputStream("testBinaryResult.ser"))) {
+            BinaryResult restoredResult = (BinaryResult) inputStream.readObject();
 
-            BinaryResult deserializedResult = BinaryResult.deserialize("test_result.ser");
-
-            if (compareResults(origResult, deserializedResult)) {
-                System.out.println("Тест пройдено успішно: результати обчислень та серіалізації/десеріалізації є однаковими.");
+            if (restoredResult.getNum() == expectedResult.getNum() &&
+                restoredResult.getBinaryIntPart().equals(expectedResult.getBinaryIntPart()) &&
+                restoredResult.getBinaryFracPart().equals(expectedResult.getBinaryFracPart())) {
+                System.out.println("Тестування серіалізації та десеріалізації успішно завершено.");
             } else {
-                System.out.println("Тест не пройдено: результати обчислень та серіалізації/десеріалізації відрізняються.");
+                System.out.println("Помилка у тестуванні серіалізації та десеріалізації.");
             }
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
         }
-    }
-
-    /**
-     * Метод для порівнювання результатів обчислення.
-     * @param original
-     * @param deserialized
-     * @return
-     */
-    public static boolean compareResults(BinaryResult original, BinaryResult deserialized) {
-        return original.getNum() == deserialized.getNum()
-                && original.getIntPart() == deserialized.getIntPart()
-                && original.getBinaryInt().equals(deserialized.getBinaryInt())
-                && original.getFracPart() == deserialized.getFracPart()
-                && original.getBinaryFrac().equals(deserialized.getBinaryFrac());
     }
 }

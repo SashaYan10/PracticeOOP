@@ -1,29 +1,49 @@
-import java.io.IOException;
+import java.io.*;
+import java.util.Scanner;
 
 /**
  * Клас для демонстрації обчислення та серіалізації/десеріалізації результатів в двійковій формі.
  */
 public class BinarySerializationDemo {
     public static void main(String[] args) {
-        BinaryRepresentation representation = new BinaryRepresentation();
-        int intPart = representation.getIntPart();
-        String binaryInt = representation.getBinaryInt();
-        double fracPart = representation.getFracPart();
-        String binaryFrac = representation.getBinaryFrac();
+        Scanner scanner = new Scanner(System.in);
+        System.out.print("Введіть десяткове число: ");
+        double num = scanner.nextDouble();
 
-        BinaryResult result = new BinaryResult(fracPart, intPart, binaryInt, fracPart, binaryFrac);
+        int intPart = (int) num;
+        double fracPart = num - intPart;
+        String binaryIntPart = Integer.toBinaryString(intPart);
 
-        try {
-            result.serialize("binary_result.ser");
-            System.out.println("Дані збережені в файлі binary_result.ser");
+        BinaryCalculator calculator = new BinaryCalculator();
+        calculator.solve(num, intPart, fracPart, binaryIntPart);
+        BinaryResult binaryResult = calculator.getBinaryResult();
 
-            System.out.println("Ціла частина:: " + result.getBinaryInt());
-            System.out.println("Дробова частина: " + result.getBinaryFrac());
+        serializeObject(binaryResult, "binaryResult.ser");
 
-            BinaryResult restoredResult = BinaryResult.deserialize("binary_result.ser");
-            System.out.println("Дані відновлено: " + restoredResult.toString());
+        BinaryResult restoredResult = (BinaryResult) deserializeObject("binaryResult.ser");
+        System.out.println("Відновлений об'єкт:");
+        System.out.println("Десяткове число: " + restoredResult.getNum());
+        System.out.println("Ціла частина: " + restoredResult.getBinaryIntPart());
+        System.out.println("Дробова частина: " + restoredResult.getBinaryFracPart());
+
+        scanner.close();
+    }
+
+    public static void serializeObject(Object obj, String fileName) {
+        try (ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream(fileName))) {
+            outputStream.writeObject(obj);
+            System.out.println("Об'єкт серіалізовано в файл " + fileName);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static Object deserializeObject(String fileName) {
+        try (ObjectInputStream inputStream = new ObjectInputStream(new FileInputStream(fileName))) {
+            return inputStream.readObject();
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
+            return null;
         }
     }
 }

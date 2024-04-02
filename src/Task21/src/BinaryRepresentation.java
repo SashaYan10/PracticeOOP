@@ -4,63 +4,35 @@ import java.util.Scanner;
  * Клас для представлення десяткового числа у двійковій формі
  */
 public class BinaryRepresentation {
-    private int intPart;
-    private String binaryInt;
-    private double fracPart;
-    private String binaryFrac;
-
-    /**
-     * Конструктор класу для отримання десяткового числа та перетворення його у двійкову форму.
-     */
-    public BinaryRepresentation() {
+    public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
+
         System.out.print("Введіть десяткове число: ");
         double num = scanner.nextDouble();
 
-        this.intPart = (int) num;
-        this.binaryInt = Integer.toBinaryString(intPart);
-        this.fracPart = num - intPart;
-        this.binaryFrac = getFracBinaryRepres(fracPart);
+        int intPart = (int) num;
+        double fracPart = num - intPart;
 
-        scanner.close();
-    }
+        String binaryIntPart = Integer.toBinaryString(intPart);
+        StringBuilder binaryFrac = new StringBuilder();
 
-    public int getIntPart() {
-        return intPart;
-    }
-
-    /**
-     * Методи для повернення цілої, цілої двійкової, дробової, двійкової дробової частини десяткового числа.
-     * @return
-     */
-    public String getBinaryInt() {
-        return binaryInt;
-    }
-
-    public double getFracPart() {
-        return fracPart;
-    }
-
-    public String getBinaryFrac() {
-        return binaryFrac;
-    }
-
-    /**
-     * Метод для отримання двійкового представлення дробової частини числа.
-     * @param fraction
-     * @return
-     */
-    private String getFracBinaryRepres(double fraction) {
-        StringBuilder binary = new StringBuilder();
-        while (fraction > 0) {
-            fraction *= 2;
-            if (fraction >= 1) {
-                binary.append(1);
-                fraction -= 1;
+        /**
+         * Метод для отримання двійкового представлення дробової частини числа.
+         */
+        while (fracPart != 0) {
+            fracPart *= 2;
+            if (fracPart >= 1) {
+                binaryFrac.append(1);
+                fracPart -= 1;
             } else {
-                binary.append(0);
+                binaryFrac.append(0);
             }
         }
-        return binary.toString();
+
+        String binaryFracPart = binaryFrac.toString();
+
+        System.out.println("Ціла частина: " + binaryIntPart);
+        System.out.println("Дробова частина: " + binaryFracPart);
+        scanner.close();
     }
 }
