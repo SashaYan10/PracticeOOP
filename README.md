@@ -580,3 +580,230 @@ public class BinaryRepresentation implements CalculatorFactory {
 
 ### Результат:
 ![](/misc/Task4.png)
+
+# Завдання 5
+
+### Реалізувати можливість скасування (undo) операцій (команд).
+### Продемонструвати поняття "макрокоманда"
+### При розробці програми використовувати шаблон Singletone.
+### Забезпечити діалоговий інтерфейс із користувачем.
+````java
+import java.util.Scanner;
+import java.util.Stack;
+
+/**
+ * Клас для представлення десяткового числа у двійковій формі
+ */
+public class BinaryRepresentation implements CalculatorFactory {
+    private BinaryResult binaryResult;
+    private ResultFactory factory;
+
+    /**
+     * Метод для запуску програми.
+     * 
+     * @param args Аргументи командного рядка.
+     */
+    public static void main(String[] args) {
+        BinaryRepresentation binaryRepresentation = new BinaryRepresentation();
+        binaryRepresentation.displayTable();
+    }
+
+    /**
+     * Метод для вибору типу відображення результату; введення десяткового числа.
+     */
+    public void displayTable() {
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Виберіть тип відображення результату:");
+        System.out.println("1. Текст.");
+        System.out.println("2. Таблиця.");
+        int choice = scanner.nextInt();
+
+        System.out.print("Введіть десяткове число: ");
+        double num = scanner.nextDouble();
+
+        if (choice == 1) {
+            factory = new Factory();
+        } else if (choice == 2) {
+            factory = new TextResultFactory();
+        }
+
+        BinaryCalculator calculator = new BinaryCalculator();
+        calculator.solve(num, (int) num, num - (int) num, Integer.toBinaryString((int) num));
+        BinaryResult binaryResult = calculator.getBinaryResult();
+
+        BinaryResult result = factory.createResult(binaryResult.getNum(), binaryResult.getBinaryIntPart(),
+                binaryResult.getBinaryFracPart());
+
+        displayConfirmation(result, factory);
+
+        scanner.close();
+    }
+
+    @Override
+    public BinaryResult calculate(double num) {
+        return binaryResult;
+    }
+
+    /**
+     * Клас для створення текстового результату.
+     */
+    class TextResultFactory implements ResultFactory {
+        @Override
+        public BinaryResult createResult(double num, String binaryIntPart, String binaryFracPart) {
+            return new BinaryResult(num, binaryIntPart, binaryFracPart);
+        }
+
+        /**
+         * Метод для відображення результату у вигляді таблиці.
+         * 
+         * @param result Результат обчислень.
+         */
+        public void Table(BinaryResult result) {
+            int numWidth = Math.max(String.valueOf(result.getNum()).length(), 15);
+            int intPartWidth = Math.max(result.getBinaryIntPart().length(), 12);
+            int fracPartWidth = Math.max(result.getBinaryFracPart().length(), 15);
+
+            String formatString = "| %-" + numWidth + "s | %-" + intPartWidth + "s | %-" + fracPartWidth + "s |%n";
+            int totalWidth = numWidth + intPartWidth + fracPartWidth + 8;
+
+            System.out.println("-".repeat(totalWidth));
+            System.out.printf(formatString, "Десяткове число", "Ціла частина", "Дробова частина");
+            System.out.println("-".repeat(totalWidth));
+            System.out.printf(formatString, result.getNum(), result.getBinaryIntPart(), result.getBinaryFracPart());
+            System.out.println("-".repeat(totalWidth));
+        }
+    }
+
+    private Stack<BinaryResult> history = new Stack<>();
+
+    public void executeOperation(BinaryResult result) {
+        history.push(result);
+    }
+
+    public void undoOperation() {
+        if (!history.isEmpty()) {
+            BinaryResult undoneResult = history.pop();
+            System.out.println("Скасовано операцію: " + undoneResult);
+        } else {
+            System.out.println("Немає операцій для скасування.");
+        }
+    }
+
+    public void displayConfirmation(BinaryResult result, ResultFactory factory) {
+        Scanner scanner = new Scanner(System.in);
+        System.out.print("Підтвердження (Y/N): ");
+        String confirmation = scanner.next().toUpperCase();
+        if (confirmation.equals("Y")) {
+            executeOperation(result);
+            if (factory instanceof TextResultFactory) {
+                ((TextResultFactory) factory).Table(result);
+            } else {
+                result.displayResult();
+            }
+        } else {
+            displayTable();
+        }
+        scanner.close();
+    }
+}
+````
+
+````java
+import java.util.ArrayList;
+import java.util.List;
+
+interface Command {
+    void execute();
+}
+
+public class MacroCommand implements Command {
+    private List<Command> commands = new ArrayList<>();
+
+    public void addCommand(Command command) {
+        commands.add(command);
+    }
+
+    @Override
+    public void execute() {
+        for (Command command : commands) {
+            command.execute();
+        }
+    }
+}
+````
+
+### Розробити клас для тестування функціональності програми.
+````java
+import java.io.*;
+import java.util.Scanner;
+
+/**
+ * Клас для тестування правильності обчислення та серіалізації/десеріалізації
+ * результатів в двійковій формі.
+ */
+public class BinaryTest {
+    public static void main(String[] args) {
+        BinaryResult expectedResult = calculateBinaryRepresentation();
+        testSerialization(expectedResult);
+        testMacroCommand();
+    }
+
+    private static BinaryResult calculateBinaryRepresentation() {
+        Scanner scanner = new Scanner(System.in);
+        System.out.print("Введіть десяткове число: ");
+        double num = scanner.nextDouble();
+        scanner.close();
+
+        BinaryCalculator binaryCalculator = new BinaryCalculator();
+        binaryCalculator.solve(num, (int) num, num - (int) num, Integer.toBinaryString((int) num));
+        return binaryCalculator.getBinaryResult();
+    }
+
+    /**
+     * Метод для тестування правильності обчислень.
+     * 
+     * @param expectedResult
+     */
+    private static void testSerialization(BinaryResult expectedResult) {
+        try (ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream("testBinaryResult.ser"))) {
+            outputStream.writeObject(expectedResult);
+            System.out.println("Об'єкт збережено у файл testBinaryResult.ser");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        try (ObjectInputStream inputStream = new ObjectInputStream(new FileInputStream("testBinaryResult.ser"))) {
+            BinaryResult restoredResult = (BinaryResult) inputStream.readObject();
+
+            if (restoredResult.getNum() == expectedResult.getNum() &&
+                    restoredResult.getBinaryIntPart().equals(expectedResult.getBinaryIntPart()) &&
+                    restoredResult.getBinaryFracPart().equals(expectedResult.getBinaryFracPart())) {
+                System.out.println("Тестування серіалізації та десеріалізації успішно завершено.");
+            } else {
+                System.out.println("Помилка у тестуванні серіалізації та десеріалізації.");
+            }
+        } catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void testMacroCommand() {
+        BinaryCalculator binaryCalculator = new BinaryCalculator();
+        MacroCommand macroCommand = new MacroCommand();
+        macroCommand.addCommand(() -> binaryCalculator.solve(10, 10, 0, "1010"));
+        macroCommand.addCommand(() -> binaryCalculator.solve(20, 20, 0, "10100"));
+
+        macroCommand.execute();
+
+        if (binaryCalculator.getBinaryResult() != null) {
+            System.out.println("Тест макрокоманди пройшов успішно.");
+        } else {
+            System.out.println("Тест макрокоманди не пройшов.");
+        }
+    }
+}
+````
+
+### Результат:
+![](/misc/Task5.1.png)
+![](/misc/Task5.2.png)
