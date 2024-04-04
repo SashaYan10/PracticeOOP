@@ -44,7 +44,7 @@ public class BinaryRepresentation implements CalculatorFactory {
         BinaryResult result = factory.createResult(binaryResult.getNum(), binaryResult.getBinaryIntPart(),
                 binaryResult.getBinaryFracPart());
 
-        displayConfirmation(result, factory);
+                undoOperation(result, factory);
 
         scanner.close();
     }
@@ -90,16 +90,13 @@ public class BinaryRepresentation implements CalculatorFactory {
         history.push(result);
     }
 
-    public void undoOperation() {
+    public void undoOperation(BinaryResult result, ResultFactory factory) {
         if (!history.isEmpty()) {
             BinaryResult undoneResult = history.pop();
             System.out.println("Скасовано операцію: " + undoneResult);
         } else {
             System.out.println("Немає операцій для скасування.");
         }
-    }
-
-    public void displayConfirmation(BinaryResult result, ResultFactory factory) {
         Scanner scanner = new Scanner(System.in);
         System.out.print("Підтвердження (Y/N): ");
         String confirmation = scanner.next().toUpperCase();
@@ -110,6 +107,8 @@ public class BinaryRepresentation implements CalculatorFactory {
             } else {
                 result.displayResult();
             }
+        } else if (confirmation.equals("N")) { // Додано умову для відміни операції
+            System.out.println("Операцію скасовано.");
         } else {
             displayTable();
         }
