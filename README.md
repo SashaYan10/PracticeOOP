@@ -561,14 +561,20 @@ public class BinaryRepresentation implements CalculatorFactory {
          * @param result Результат обчислень.
          */
         public void Table(BinaryResult result) {
-            System.out.println("------------------------------------------------------");
-            System.out.println("| Десяткове число | Ціла частина | Дробова частина |");
-            System.out.println("------------------------------------------------------");
-            System.out.printf("| %-15.2f | %-12s | %-15s |\n", result.getNum(), result.getBinaryIntPart(), result.getBinaryFracPart());
-            System.out.println("------------------------------------------------------");
+            int numWidth = Math.max(String.valueOf(result.getNum()).length(), 15);
+            int intPartWidth = Math.max(result.getBinaryIntPart().length(), 12);
+            int fracPartWidth = Math.max(result.getBinaryFracPart().length(), 15);
+            
+            String formatString = "| %-"+numWidth+"s | %-"+intPartWidth+"s | %-"+fracPartWidth+"s |%n";
+            int totalWidth = numWidth + intPartWidth + fracPartWidth + 8;
+            
+            System.out.println("-".repeat(totalWidth));
+            System.out.printf(formatString, "Десяткове число", "Ціла частина", "Дробова частина");
+            System.out.println("-".repeat(totalWidth));
+            System.out.printf(formatString, result.getNum(), result.getBinaryIntPart(), result.getBinaryFracPart());
+            System.out.println("-".repeat(totalWidth));
         }
     }
-    
 }
 ````
 
