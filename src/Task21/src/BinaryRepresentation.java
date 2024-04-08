@@ -21,7 +21,46 @@ public class BinaryRepresentation implements CalculatorFactory {
      */
     public static void main(String[] args) {
         BinaryRepresentation binaryRepresentation = new BinaryRepresentation();
-        binaryRepresentation.displayTable();
+        binaryRepresentation.displayMainMenu();
+    }
+
+    public void displayMainMenu() {
+        Scanner scanner = new Scanner(System.in);
+        while (true) {
+            System.out.println("Головне меню:");
+            System.out.println("1. Запустити програму");
+            System.out.println("2. Зберегти файл");
+            System.out.println("3. Відновлення файлу");
+            System.out.println("4. Тест");
+            System.out.println("5. Вихід");
+
+            System.out.print("Оберіть опцію: ");
+            int choice = scanner.nextInt();
+
+            switch (choice) {
+                case 1:
+                    displayTable();
+                    System.exit(0);
+                    break;
+                case 2:
+                    BinarySerializationDemo.serializeObject(binaryResult, "binaryResult.ser");
+                    break;
+                case 3:
+                    Object restoredResult = BinarySerializationDemo.deserializeObject("binaryResult.ser");
+                    System.out.println("Файл відновлено.");
+                    break;
+                case 4:
+                    BinaryTest.main(null);
+                    break;
+                case 5:
+                    System.out.println("Завершення роботи.");
+                    System.exit(0);
+                    break;
+                default:
+                    System.out.println("Невірний вибір. Спробуйте ще раз.");
+                    break;
+            }
+        }
     }
 
     /**
@@ -95,7 +134,7 @@ public class BinaryRepresentation implements CalculatorFactory {
             BinaryResult undoneResult = history.pop();
             System.out.println("Скасовано операцію: " + undoneResult);
         }
-
+    
         Scanner scanner = new Scanner(System.in);
         System.out.print("Підтвердження (Y/N): ");
         String confirmation = scanner.next().toUpperCase();
@@ -108,13 +147,14 @@ public class BinaryRepresentation implements CalculatorFactory {
             }
         } else if (confirmation.equals("N")) {
             System.out.println("Операцію скасовано.");
-            System.exit(0);
+            displayMainMenu();
         } else {
             displayTable();
         }
-
+    
         scanner.close();
     }
+    
 
     public void executeOperation(BinaryResult result) {
         history.push(result);
