@@ -1039,7 +1039,6 @@ public class BinaryRepresentation implements CalculatorFactory {
             switch (choice) {
                 case 1:
                     displayTable();
-                    System.exit(0);
                     break;
                 case 2:
                     BinarySerializationDemo.serializeObject(binaryResult, "binaryResult.ser");
@@ -1091,11 +1090,10 @@ public class BinaryRepresentation implements CalculatorFactory {
         taskQueue.add(() -> {
             undoOperation(result, factory);
             displayStatistics(binaryResult);
+            displayMainMenu();
         });
 
         executeTasks();
-
-        scanner.close();
     }
 
     private void executeTasks() {
@@ -1150,8 +1148,6 @@ public class BinaryRepresentation implements CalculatorFactory {
         } else {
             displayTable();
         }
-    
-        scanner.close();
     }
     
 
