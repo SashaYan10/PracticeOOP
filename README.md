@@ -130,23 +130,14 @@ public class BinaryCalculator {
 ### Розробити клас для демонстрації в діалоговому режимі збереження та відновлення стану об'єкта, використовуючи серіалізацію. Показати особливості використання transient полів.
 ````java
 import java.io.*;
-import java.util.Scanner;
 
 /**
  * Клас для демонстрації обчислення та серіалізації/десеріалізації результатів в двійковій формі.
  */
 public class BinarySerializationDemo {
     public static void main(String[] args) {
-        Scanner scanner = new Scanner(System.in);
-        System.out.print("Введіть десяткове число: ");
-        double num = scanner.nextDouble();
-
-        int intPart = (int) num;
-        double fracPart = num - intPart;
-        String binaryIntPart = Integer.toBinaryString(intPart);
-
         BinaryCalculator calculator = new BinaryCalculator();
-        calculator.solve(num, intPart, fracPart, binaryIntPart);
+        calculator.solve(10, 10, 0, "1010");
         BinaryResult binaryResult = calculator.getBinaryResult();
 
         serializeObject(binaryResult, "binaryResult.ser");
@@ -156,8 +147,6 @@ public class BinarySerializationDemo {
         System.out.println("Десяткове число: " + restoredResult.getNum());
         System.out.println("Ціла частина: " + restoredResult.getBinaryIntPart());
         System.out.println("Дробова частина: " + restoredResult.getBinaryFracPart());
-
-        scanner.close();
     }
 
     public static void serializeObject(Object obj, String fileName) {
@@ -200,13 +189,8 @@ public class BinaryTest {
     }
 
     private static BinaryResult calculateBinaryRepresentation() {
-        Scanner scanner = new Scanner(System.in);
-        System.out.print("Введіть десяткове число: ");
-        double num = scanner.nextDouble();
-        scanner.close();
-
         BinaryCalculator binaryCalculator = new BinaryCalculator();
-        binaryCalculator.solve(num, (int) num, num - (int) num, Integer.toBinaryString((int) num));
+        binaryCalculator.solve(10, 10, 0, "1010");
         return binaryCalculator.getBinaryResult();
     }
 
@@ -217,7 +201,6 @@ public class BinaryTest {
     private static void testSerialization(BinaryResult expectedResult) {
         try (ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream("testBinaryResult.ser"))) {
             outputStream.writeObject(expectedResult);
-            System.out.println("Об'єкт збережено у файл testBinaryResult.ser");
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -226,8 +209,8 @@ public class BinaryTest {
             BinaryResult restoredResult = (BinaryResult) inputStream.readObject();
 
             if (restoredResult.getNum() == expectedResult.getNum() &&
-                restoredResult.getBinaryIntPart().equals(expectedResult.getBinaryIntPart()) &&
-                restoredResult.getBinaryFracPart().equals(expectedResult.getBinaryFracPart())) {
+                    restoredResult.getBinaryIntPart().equals(expectedResult.getBinaryIntPart()) &&
+                    restoredResult.getBinaryFracPart().equals(expectedResult.getBinaryFracPart())) {
                 System.out.println("Тестування серіалізації та десеріалізації успішно завершено.");
             } else {
                 System.out.println("Помилка у тестуванні серіалізації та десеріалізації.");
