@@ -715,7 +715,6 @@ public class MacroCommand implements Command {
 ### Розробити клас для тестування функціональності програми.
 ````java
 import java.io.*;
-import java.util.Scanner;
 
 /**
  * Клас для тестування правильності обчислення та серіалізації/десеріалізації
@@ -729,13 +728,8 @@ public class BinaryTest {
     }
 
     private static BinaryResult calculateBinaryRepresentation() {
-        Scanner scanner = new Scanner(System.in);
-        System.out.print("Введіть десяткове число: ");
-        double num = scanner.nextDouble();
-        scanner.close();
-
         BinaryCalculator binaryCalculator = new BinaryCalculator();
-        binaryCalculator.solve(num, (int) num, num - (int) num, Integer.toBinaryString((int) num));
+        binaryCalculator.solve(10, 10, 0, "1010");
         return binaryCalculator.getBinaryResult();
     }
 
