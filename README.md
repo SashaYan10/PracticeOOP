@@ -678,7 +678,7 @@ public class BinaryRepresentation implements CalculatorFactory {
             } else {
                 result.displayResult();
             }
-        } else if (confirmation.equals("N")) { // Додано умову для відміни операції
+        } else if (confirmation.equals("N")) {
             System.out.println("Операцію скасовано.");
         } else {
             displayTable();
